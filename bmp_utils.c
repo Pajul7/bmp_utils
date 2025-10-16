@@ -251,3 +251,24 @@ void clearColor(BMP_IMG * img, Color c){
 bool isSameColor(Color a , Color b){
     return (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a);
 }
+
+BMP_IMG * duplicateBMP(BMP_IMG * src){
+
+    BMP_IMG * res = malloc(sizeof(BMP_IMG));
+    
+    (*res).pixArray       = src->pixArray;
+    (*res).fileSize       = (int) src->pixArraySize + 54;
+    (*res).width          = (int) src->width;
+    (*res).height         = (int) src->height;
+    (*res).bitsPerPixel   = (int) src->bitsPerPixel;
+    (*res).pixArraySize   = (int) src->pixArraySize;
+    (*res).rowSize        = (int) src->rowSize;
+    (*res).rowSize        = (int) src->rowSize;
+    
+    unsigned char * pixArray = malloc(src->pixArraySize); 
+    memcpy(pixArray,src->pixArray, src->pixArraySize);
+
+    (*res).pixArray = pixArray;
+
+    return res;
+}
