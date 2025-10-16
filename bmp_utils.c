@@ -106,20 +106,20 @@ void putPixel(BMP_IMG * img, int x, int y, Color c){
     if (img->bitsPerPixel == 32) {
         __uint32_t newPix =  (c.a << 24) | (c.r << 16) | (c.g << 8) | (c.b);
 
-        printf("%X\n", newPix);
+        //printf("%X\n", newPix);
 
         memcpy( pixelRowPtr + x * 4,&newPix , sizeof(__uint32_t));
 
     } else if (img->bitsPerPixel == 24){
 
-        printf("putting pixel in a 24bits setting. at x = %d, and y = %d.\n", x, y);
+        //printf("putting pixel in a 24bits setting. at x = %d, and y = %d.\n", x, y);
 
         pixelRowPtr[ x*3 ] = c.b;
         pixelRowPtr[ x*3 + 1] = c.g;
         pixelRowPtr[ x*3 + 2] = c.r;
 
     }
-    printf("get pixel 0 0 blue : %d\n", getPixel(img,0,0).b );
+    //printf("get pixel 0 0 blue : %d\n", getPixel(img,0,0).b );
 }
 
 void printBMP(BMP_IMG * img){
@@ -138,7 +138,7 @@ void printBMP(BMP_IMG * img){
     }
 }
 
-BMP_IMG newBMP( int height, int width, int bpp ){
+BMP_IMG * newBMP( int height, int width, int bpp ){
 
     if (bpp != 32 && bpp != 24){
         fprintf(stderr, "Error : bpp formats other than 32b and 24b are not supported.\n");
@@ -151,15 +151,16 @@ BMP_IMG newBMP( int height, int width, int bpp ){
     unsigned char * pixArray = malloc(pixArraySize); 
     memset(pixArray,0,pixArraySize);
 
-    BMP_IMG res = {
-        .pixArray       = pixArray,
-        .fileSize       = (int) pixArraySize + 54,
-        .width          = (int) width,
-        .height         = (int) height,
-        .bitsPerPixel   = (int) bpp,
-        .pixArraySize   = (int) pixArraySize,
-        .rowSize        = (int) rowSize
-    };
+    BMP_IMG * res = malloc(sizeof(BMP_IMG));
+
+    (*res).pixArray       = pixArray;
+    (*res).fileSize       = (int) pixArraySize + 54;
+    (*res).width          = (int) width;
+    (*res).height         = (int) height;
+    (*res).bitsPerPixel   = (int) bpp;
+    (*res).pixArraySize   = (int) pixArraySize;
+    (*res).rowSize        = (int) rowSize;
+
     return res;
 }
 
@@ -191,7 +192,7 @@ void exportBMP(BMP_IMG img, const char * filename){
     __uint32_t ncolor = 0;
     __uint32_t importantColors = 0;
 
-    FILE * f = fopen(filename, "wb");
+    FILE * f = fopen(filename, "wb+");
 
     printf("File size is :%d\n", fileSize);
 
@@ -212,7 +213,7 @@ void exportBMP(BMP_IMG img, const char * filename){
     fwrite(&vppm,            sizeof(__uint32_t)  , 1,f); // 46 B
     fwrite(&ncolor,          sizeof(__uint32_t)  , 1,f); // 50 B
     fwrite(&importantColors, sizeof(__uint32_t)  , 1,f); // 54 B
-    fwrite(img.pixArray,         img.pixArraySize, 1,f);
+    fwrite(img.pixArray,     img.pixArraySize    , 1,f);
 
     fclose(f);
 }
@@ -247,31 +248,6 @@ void clearColor(BMP_IMG * img, Color c){
 
 }
 
-int main(){
-
-    BMP_IMG test = importBMP("smile.bmp");
-
-    putPixel(&test, 10,10,BLACK);
-    putPixel(&test, 11,10,BLACK);
-    putPixel(&test, 10,11,BLACK);
-    putPixel(&test, 11,11,BLACK);
-
-    //printBMP(&test);
-
-    BMP_IMG test2 = newBMP(50,50,24);
-
-    clearColor(&test2,BLUE);
-
-    exportBMP(test2,"out.bmp");
-    
-    clearColor(&test2,MAGENTA);
-
-    exportBMP(test2,"out2.bmp");
-
-
-
-    destroyBMP(&test);
-    destroyBMP(&test2);
-
-    return EXIT_SUCCESS;
+bool isSameColor(Color a , Color b){
+    return (a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a);
 }

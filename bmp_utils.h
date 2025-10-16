@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifndef BMP_utils
+#define BMP_utils
 
 typedef struct BMP_IMG {
     unsigned char * pixArray;
@@ -41,3 +43,5 @@ BMP_IMG newBMP( int height, int width, int bpp );
 void destroyBMP(BMP_IMG * img);
 void exportBMP(BMP_IMG img, const char * filename);
 void clearColor(BMP_IMG * img, Color c);
+
+#endif
