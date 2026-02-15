@@ -62,8 +62,6 @@ BMP_IMG importBMP(const char * filepath){
     printf("Image row size : %d B\n",rowSize);
     printf("Image array size : %d B\n",pixArraySize);
 
-    printf("size of :%d\n",(int) sizeof(__uint8_t));
-
     free(fileInfo);
     return res;
 }
@@ -127,7 +125,7 @@ void printBMP(BMP_IMG * img){
     for (int y = 0 ; y < img->height; y++){
         for (int x = 0; x < img->width; x++){
 
-            if ( getPixel(img,x,y).b==255){
+            if ( getPixel(img,x,y).b>=128){
                 printf(".");
             }else{
                 printf("#");
